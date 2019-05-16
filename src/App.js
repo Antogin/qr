@@ -1,12 +1,15 @@
 import React from 'react';
 import './App.css';
 import jsQR from 'jsqr';
-import { Spinner, Overlay, Dialog } from '@blueprintjs/core';
+import { Dialog, Button } from '@blueprintjs/core';
+import { isUrl } from './utils/regex';
 
 class App extends React.Component {
 	state = {
 		isOpen: false,
-		code: null
+		code: null,
+		cams: 0,
+		multipleCameras: false
 	};
 	constructor(props) {
 		super(props);
@@ -16,14 +19,21 @@ class App extends React.Component {
 
 	componentDidMount() {
 		const video = this.myRef.current;
+		navigator.mediaDevices
+			.enumerateDevices()
+			.then((devices) => {
+				const cams = devices.filter(({ kind }) => kind === 'videoinput');
+				this.setState({ ...this.state, multipleCameras: cams.length > 1, cameras: 0 });
 
-		navigator.mediaDevices.getUserMedia({ video: { } }).then((stream) => {
-			console.log(stream);
-			video.srcObject = stream;
-			video.setAttribute('playsinline', true);
-			video.play();
-			requestAnimationFrame(this.tick);
-		});
+				return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cams[0].deviceId } } });
+			})
+			.then((stream) => {
+				console.log(stream);
+				video.srcObject = stream;
+				video.setAttribute('playsinline', true);
+				video.play();
+				requestAnimationFrame(this.tick);
+			});
 	}
 
 	tick = () => {
@@ -43,8 +53,6 @@ class App extends React.Component {
 				console.log(code);
 				this.setState({ isOpen: true, data: code.data });
 				return;
-			} else {
-				console.log('no data');
 			}
 		}
 		requestAnimationFrame(this.tick);
@@ -57,15 +65,20 @@ class App extends React.Component {
 	};
 
 	render() {
-		const { isOpen, data } = this.state;
+		const { isOpen, data, multipleCameras } = this.state;
 		return (
 			<div className="App">
 				<div ref={this.myRef} />
 				<canvas className="canvas-feed" ref={this.canvas} />
 				<video className="video-feed" ref={this.myRef} />
+
+				<div className="swap-cam-container">
+					{multipleCameras ? <Button icon="swap-horizontal" className="switch-button" large /> : null}
+				</div>
+
 				<div>
 					<Dialog isOpen={isOpen} onClose={this.toggleOverlay} title="Code">
-						<div className="bp3-dialog-body">{data}</div>
+						<div className="bp3-dialog-body">{isUrl ? <a href={data}> {data} </a> : data}</div>
 						<div className="bp3-dialog-footer">
 							<div className="bp3-dialog-footer-actions">
 								<button className="bp3-button" onClick={this.toggleOverlay}>
