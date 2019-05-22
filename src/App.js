@@ -23,7 +23,12 @@ class App extends React.Component {
 			.enumerateDevices()
 			.then((devices) => {
 				const cams = devices.filter(({ kind }) => kind === 'videoinput');
-				this.setState({ ...this.state, multipleCameras: cams.length > 1, cameras: 0 });
+				this.setState({
+					...this.state,
+					multipleCameras: cams.length > 1,
+					deviceId: cams[0].deviceId,
+					cameras: cams
+				});
 
 				return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cams[0].deviceId } } });
 			})
@@ -34,6 +39,22 @@ class App extends React.Component {
 				video.play();
 				requestAnimationFrame(this.tick);
 			});
+	}
+
+	swapCam() {
+		const { cameras, deviceId } = this.state;
+
+		const newCam = cameras.find((cam) => cam.deviceId !== deviceId);
+
+		navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: newCam.deviceId } } }).then((stream) => {
+			console.log(stream);
+			this.setState({ ...this.state, multipleCameras: cams.length > 1, deviceId:  newCam.deviceId, cameras: cams });
+
+			video.srcObject = stream;
+			video.setAttribute('playsinline', true);
+			video.play();
+			requestAnimationFrame(this.tick);
+		});
 	}
 
 	tick = () => {
@@ -73,7 +94,9 @@ class App extends React.Component {
 				<video className="video-feed" ref={this.myRef} />
 
 				<div className="swap-cam-container">
-					{multipleCameras ? <Button icon="swap-horizontal" className="switch-button" large /> : null}
+					{multipleCameras ? (
+						<Button onClick={this.swapCam} icon="swap-horizontal" className="switch-button" large />
+					) : null}
 				</div>
 
 				<div>
