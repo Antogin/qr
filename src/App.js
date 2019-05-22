@@ -41,7 +41,7 @@ class App extends React.Component {
 			});
 	}
 
-	swapCam() {
+	swapCam = () => {
 		const { cameras, deviceId } = this.state;
 		const video = this.myRef.current;
 
@@ -95,9 +95,9 @@ class App extends React.Component {
 				<video className="video-feed" ref={this.myRef} />
 
 				<div className="swap-cam-container">
-					{multipleCameras ? (
+					{/* {multipleCameras ? ( */}
 						<Button onClick={this.swapCam} icon="swap-horizontal" className="switch-button" large />
-					) : null}
+					{/* ) : null} */}
 				</div>
 
 				<div>
