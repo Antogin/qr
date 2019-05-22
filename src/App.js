@@ -43,12 +43,13 @@ class App extends React.Component {
 
 	swapCam() {
 		const { cameras, deviceId } = this.state;
+		const video = this.myRef.current;
 
 		const newCam = cameras.find((cam) => cam.deviceId !== deviceId);
 
 		navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: newCam.deviceId } } }).then((stream) => {
 			console.log(stream);
-			this.setState({ ...this.state, multipleCameras: cams.length > 1, deviceId:  newCam.deviceId, cameras: cams });
+			this.setState({ ...this.state, deviceId:  newCam.deviceId });
 
 			video.srcObject = stream;
 			video.setAttribute('playsinline', true);
