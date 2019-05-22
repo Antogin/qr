@@ -47,9 +47,18 @@ class App extends React.Component {
 
 		const newCam = cameras.find((cam) => cam.deviceId !== deviceId);
 
-		navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: newCam.deviceId } } }).then((stream) => {
+		if (!newCam) {
+			return
+		}
+		navigator.mediaDevices.getUserMedia({
+			video: {
+				facingMode: {
+					exact: 'environment'
+				}
+			}
+		}).then((stream) => {
 			console.log(stream);
-			this.setState({ ...this.state, deviceId:  newCam.deviceId });
+			this.setState({ ...this.state, deviceId: newCam.deviceId });
 
 			video.srcObject = stream;
 			video.setAttribute('playsinline', true);
@@ -96,7 +105,7 @@ class App extends React.Component {
 
 				<div className="swap-cam-container">
 					{/* {multipleCameras ? ( */}
-						<Button onClick={this.swapCam} icon="swap-horizontal" className="switch-button" large />
+					<Button onClick={this.swapCam} icon="swap-horizontal" className="switch-button" large />
 					{/* ) : null} */}
 				</div>
 
