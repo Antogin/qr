@@ -30,9 +30,10 @@ class App extends React.Component {
 					cameras: cams
 				});
 
-				console.log(cams)
+				alert(JSON.stringify(cams))
 
 				if (cams.length > 1) {
+
 					return navigator.mediaDevices.getUserMedia({
 						video: {
 							facingMode: {
@@ -92,8 +93,7 @@ class App extends React.Component {
 			var code = jsQR(imageData.data, imageData.width, imageData.height, {
 				inversionAttempts: 'dontInvert'
 			});
-			if (code) {
-				console.log(code);
+			if (code && code.data) {
 				this.setState({ isOpen: true, data: code.data });
 				return;
 			}
