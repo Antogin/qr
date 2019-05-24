@@ -30,6 +30,18 @@ class App extends React.Component {
 					cameras: cams
 				});
 
+				console.log(cams)
+
+				if (cams.length > 1) {
+					return navigator.mediaDevices.getUserMedia({
+						video: {
+							facingMode: {
+								exact: 'environment'
+							}
+						}
+					})
+				}
+
 				return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cams[0].deviceId } } });
 			})
 			.then((stream) => {
