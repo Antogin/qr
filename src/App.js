@@ -30,6 +30,19 @@ class App extends React.Component {
 					cameras: cams
 				});
 
+				alert(JSON.stringify(cams))
+
+				if (cams.length > 1) {
+
+					return navigator.mediaDevices.getUserMedia({
+						video: {
+							facingMode: {
+								exact: 'environment'
+							}
+						}
+					})
+				}
+
 				return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cams[0].deviceId } } });
 			})
 			.then((stream) => {
@@ -103,9 +116,9 @@ class App extends React.Component {
 				<video className="video-feed" ref={this.myRef} />
 
 				<div className="swap-cam-container">
-					{multipleCameras ? (
-						<Button onClick={this.swapCam} icon="swap-horizontal" className="switch-button" large />
-					) : null} }
+					{/* {multipleCameras ? ( */}
+					<Button onClick={this.swapCam} icon="swap-horizontal" className="switch-button" large />
+					{/* ) : null} */}
 				</div>
 
 				<div>
