@@ -19,39 +19,38 @@ class App extends React.Component {
 
 	componentDidMount() {
 		const video = this.myRef.current;
-		navigator.mediaDevices
-			.enumerateDevices()
-			.then((devices) => {
-				const cams = devices.filter(({ kind }) => kind === 'videoinput');
-				this.setState({
-					...this.state,
-					multipleCameras: cams.length > 1,
-					deviceId: cams[0].deviceId,
-					cameras: cams
-				});
 
-				alert(JSON.stringify(cams))
-
-				if (cams.length > 1) {
-
-					return navigator.mediaDevices.getUserMedia({
-						video: {
-							facingMode: {
-								exact: 'environment'
-							}
-						}
-					})
-				}
-
-				return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cams[0].deviceId } } });
-			})
+		navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
 			.then((stream) => {
 				console.log(stream);
 				video.srcObject = stream;
 				video.setAttribute('playsinline', true);
 				video.play();
 				requestAnimationFrame(this.tick);
-			});
+			}).catch(e => {
+				navigator.mediaDevices
+					.enumerateDevices()
+					.then((devices) => {
+						const cams = devices.filter(({ kind }) => kind === 'videoinput');
+						this.setState({
+							...this.state,
+							multipleCameras: cams.length > 1,
+							deviceId: cams[0].deviceId,
+							cameras: cams
+						});
+
+						return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cams[0].deviceId } } });
+					})
+					.then((stream) => {
+						console.log(stream);
+						video.srcObject = stream;
+						video.setAttribute('playsinline', true);
+						video.play();
+						requestAnimationFrame(this.tick);
+					});
+			})
+
+
 	}
 
 	swapCam = () => {
@@ -116,9 +115,9 @@ class App extends React.Component {
 				<video className="video-feed" ref={this.myRef} />
 
 				<div className="swap-cam-container">
-					{/* {multipleCameras ? ( */}
-					<Button onClick={this.swapCam} icon="swap-horizontal" className="switch-button" large />
-					{/* ) : null} */}
+					{multipleCameras ? (
+						<Button onClick={this.swapCam} icon="swap-horizontal" className="switch-button" large />
+					) : null} }
 				</div>
 
 				<div>
