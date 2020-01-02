@@ -18,18 +18,22 @@ class App extends React.Component {
 	componentDidMount() {
 		const video = this.myRef.current;
 
-		navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+		navigator.mediaDevices
+			.getUserMedia({ video: { facingMode: 'environment' } })
 			.then((stream) => {
 				video.srcObject = stream;
 				video.setAttribute('playsinline', true);
 				video.play();
 				requestAnimationFrame(this.tick);
-			}).catch(e => {
+			})
+			.catch((e) => {
 				navigator.mediaDevices
 					.enumerateDevices()
 					.then((devices) => {
 						const cams = devices.filter(({ kind }) => kind === 'videoinput');
-						return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cams[0].deviceId } } });
+						return navigator.mediaDevices.getUserMedia({
+							video: { deviceId: { exact: cams[0].deviceId } }
+						});
 					})
 					.then((stream) => {
 						video.srcObject = stream;
@@ -37,7 +41,7 @@ class App extends React.Component {
 						video.play();
 						requestAnimationFrame(this.tick);
 					});
-			})
+			});
 	}
 
 	tick = () => {
@@ -77,7 +81,9 @@ class App extends React.Component {
 
 				<div>
 					<Dialog isOpen={isOpen} onClose={this.toggleOverlay} title="Code">
-						<div className="bp3-dialog-body"><a href={data}> {data} </a> 
+						<div className="bp3-dialog-body">
+							<a href={data}> {data} </a>{' '}
+						</div>
 						<div className="bp3-dialog-footer">
 							<div className="bp3-dialog-footer-actions">
 								<button className="bp3-button" onClick={this.toggleOverlay}>
