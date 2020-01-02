@@ -77,7 +77,7 @@ class App extends React.Component {
 
 				<div>
 					<Dialog isOpen={isOpen} onClose={this.toggleOverlay} title="Code">
-						<div className="bp3-dialog-body">{isUrl(data) ? <a href={data}> {data} </a> : data}</div>
+						<div className="bp3-dialog-body"><a href={data}> {data} </a> 
 						<div className="bp3-dialog-footer">
 							<div className="bp3-dialog-footer-actions">
 								<button className="bp3-button" onClick={this.toggleOverlay}>
